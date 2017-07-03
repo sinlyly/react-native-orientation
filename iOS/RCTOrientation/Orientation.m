@@ -126,14 +126,21 @@ RCT_EXPORT_METHOD(lockToLandscape)
   UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   NSString *orientationStr = [self getSpecificOrientationStr:orientation];
   if ([orientationStr isEqualToString:@"LANDSCAPE-LEFT"]) {
-    [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+      [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationPortrait] forKey:@"orientation"];
+      [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
+      [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
       [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationLandscapeRight] forKey:@"orientation"];
     }];
+  }else if([orientationStr isEqualToString:@"LANDSCAPE-RIGHT"]){
+      [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationPortrait] forKey:@"orientation"];
+      [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
+      [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
+          [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationLandscapeLeft] forKey:@"orientation"];
+      }];
   } else {
     [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
     [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
-      [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationLandscapeLeft] forKey:@"orientation"];
+      [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationLandscapeRight] forKey:@"orientation"];
     }];
   }
 }
