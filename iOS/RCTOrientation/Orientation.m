@@ -35,11 +35,14 @@ static UIInterfaceOrientationMask _orientation = UIInterfaceOrientationMaskAllBu
 - (void)deviceOrientationDidChange:(NSNotification *)notification
 {    
   UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-  [self.bridge.eventDispatcher sendDeviceEventWithName:@"specificOrientationDidChange"
-                                              body:@{@"specificOrientation": [self getSpecificOrientationStr:orientation]}];
-
-  [self.bridge.eventDispatcher sendDeviceEventWithName:@"orientationDidChange"
-                                              body:@{@"orientation": [self getOrientationStr:orientation]}];
+    if(notification.userInfo == nil || ![notification.userInfo[@"resource"] isEqualToString:@"lock"]){
+     [self.bridge.eventDispatcher sendDeviceEventWithName:@"specificOrientationDidChange"
+                                                     body:@{@"specificOrientation": [self getSpecificOrientationStr:orientation]}];
+     
+     [self.bridge.eventDispatcher sendDeviceEventWithName:@"orientationDidChange"
+                                                     body:@{@"orientation": [self getOrientationStr:orientation]}];
+  }
+  
 
 }
 
@@ -122,7 +125,9 @@ RCT_EXPORT_METHOD(lockToPortrait)
       [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
           [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationPortrait] forKey:@"orientation"];
           [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceOrientationDidChangeNotification
-                                                              object:self];
+                                                              object:self
+                                                              userInfo:@{@"resource": @"lock"}
+                                                            ];
       }];
     
   }else{
@@ -146,14 +151,16 @@ RCT_EXPORT_METHOD(lockToLandscape)
       [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
         [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationLandscapeRight] forKey:@"orientation"];
         [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceOrientationDidChangeNotification
-                                                              object:self];
+                                                              object:self
+                                                          userInfo:@{@"resource": @"lock"}];
     }];
   }else if([orientationStr isEqualToString:@"LANDSCAPE-RIGHT"]){
             [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
       [[NSOperationQueue mainQueue] addOperationWithBlock:^ {
           [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationLandscapeLeft] forKey:@"orientation"];
           [[NSNotificationCenter defaultCenter] postNotificationName:UIDeviceOrientationDidChangeNotification
-                                                              object:self];
+                                                              object:self
+                                                              userInfo:@{@"resource": @"lock"}];
       }];
   } else {
     [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
