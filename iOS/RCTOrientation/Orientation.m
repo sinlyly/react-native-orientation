@@ -34,16 +34,42 @@ static UIInterfaceOrientationMask _orientation = UIInterfaceOrientationMaskAllBu
 
 - (void)deviceOrientationDidChange:(NSNotification *)notification
 {    
-  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
-    if(notification.userInfo == nil || ![notification.userInfo[@"resource"] isEqualToString:@"lock"]){
+   UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+    NSString *currentOrientationStr = [self getOrientationStr:orientation];
+    NSString *compontsOrientationStr = [self getOrientationMaskStr:_orientation];
+    if(![currentOrientationStr  isEqualToString:compontsOrientationStr]){
      [self.bridge.eventDispatcher sendDeviceEventWithName:@"specificOrientationDidChange"
                                                      body:@{@"specificOrientation": [self getSpecificOrientationStr:orientation]}];
      
      [self.bridge.eventDispatcher sendDeviceEventWithName:@"orientationDidChange"
-                                                     body:@{@"orientation": [self getOrientationStr:orientation]}];
+                                                     body:@{@"orientation": currentOrientationStr}];
   }
   
 
+}
+
+- (NSString *)getOrientationMaskStr: (UIInterfaceOrientationMask)orientation {
+    NSString *orientationStr;
+    switch (orientation) {
+        case UIInterfaceOrientationMaskPortrait:
+            orientationStr = @"PORTRAIT";
+            break;
+        case UIInterfaceOrientationMaskLandscape:
+        case UIInterfaceOrientationMaskLandscapeLeft:
+        case UIInterfaceOrientationMaskLandscapeRight:
+            
+            orientationStr = @"LANDSCAPE";
+            break;
+            
+        case UIInterfaceOrientationMaskPortraitUpsideDown:
+            orientationStr = @"PORTRAIT";
+            break;
+            
+        default:
+            orientationStr = @"UNKNOWN";
+            break;
+    }
+    return orientationStr;
 }
 
 
@@ -60,7 +86,7 @@ static UIInterfaceOrientationMask _orientation = UIInterfaceOrientationMaskAllBu
       break;
 
     case UIDeviceOrientationPortraitUpsideDown:
-      orientationStr = @"PORTRAITUPSIDEDOWN";
+      orientationStr = @"PORTRAIT";
       break;
 
     default:
