@@ -48,11 +48,12 @@ public class OrientationModule extends ReactContextBaseJavaModule implements Lif
             @Override
             public void onOrientationChanged(int orientation) {
                 deviceOrientation = orientation;
-                if(lastDeviceOrientation.compareTo(getDeviceOrientationAsString())!=0){
+                String _orientationStr = getSingleOrientationAsString();
+                if(!_orientationStr.equals("UNKNOWN") && lastDeviceOrientation.compareTo(getDeviceOrientationAsString())!=0){
                     lastDeviceOrientation = getDeviceOrientationAsString();
                     //WritableNativeMap data = getDataMap();
                     WritableMap params = Arguments.createMap();
-                    params.putString("orientation", getSingleOrientationAsString());
+                    params.putString("orientation", _orientationStr);
                     try{
                         ctx.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                                 .emit("orientationDidChange", params);
